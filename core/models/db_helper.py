@@ -38,13 +38,13 @@ class DatabaseHelper:
             scopefunc=current_task,
         )
         return session
-    
+
     async def session_dependency(self) -> AsyncSession:
         """Создает сессию для каждого запроса"""
         async with self.session_factory() as session:
             yield session
             await session.close()
-            
+
     async def scoped_session_dependency(self) -> AsyncSession:
         """Создает сессию для каждого запроса"""
         session = self.get_scoped_session()
@@ -52,4 +52,4 @@ class DatabaseHelper:
         await session.close()
 
 
-db_helper = DatabaseHelper(url=settings.db_url, echo=settings.db_echo)
+db_helper = DatabaseHelper(url=settings.db.url, echo=settings.db.echo)

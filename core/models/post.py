@@ -18,3 +18,11 @@ class Post(Base, UserRelationMixin):
         default="",
         server_default="",
     )
+
+    def __str__(self):
+        """Возвращает строковое представление поста"""
+        return f"{self.__class__.__name__}(id={self.id}, username={self.title!r}, user_id={self.user_id})"
+
+    def __repr__(self):
+        """Возвращает строковое представление поста в списке пользователей"""
+        return str(self)
