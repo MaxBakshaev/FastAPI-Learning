@@ -10,6 +10,7 @@ from .base import Base
 
 if TYPE_CHECKING:
     from .product import Product
+    from .order_product_association import OrderProductAssociation
 
 
 class Order(Base):
@@ -25,4 +26,9 @@ class Order(Base):
         secondary="order_product_association",
         back_populates="orders",
         # lazy="noload"
+    )
+
+    # association between Parent -> Association -> Child
+    products_details: Mapped[list["OrderProductAssociation"]] = relationship(
+        back_populates="order"
     )
