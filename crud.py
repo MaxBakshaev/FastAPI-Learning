@@ -221,7 +221,7 @@ async def demo_get_orders_with_products_through_secondary(session: AsyncSession)
             print("-", product.id, product.name, product.price)
 
 
-async def demo_get_orders_with_products_assoc(session: AsyncSession):
+async def get_orders_with_products_assoc(session: AsyncSession) -> list[Order]:
     """
     Запрашивает заказ, подгружает информация о связках, к каждой связке загружает информацию
     о товаре, возвращает список заказов.
@@ -246,7 +246,7 @@ async def demo_get_orders_with_products_with_assoc(session: AsyncSession):
     """
     Проходит по заказам, проверяет детали, через которые можно получить информацию о товаре
     """
-    orders = await demo_get_orders_with_products_assoc(session)
+    orders = await get_orders_with_products_assoc(session)
 
     for order in orders:
         print(order.id, order.promocode, order.created_at, "products:")
@@ -262,6 +262,25 @@ async def demo_get_orders_with_products_with_assoc(session: AsyncSession):
                 "qty:",
                 order_product_details.count,
             )
+
+
+async def create_gift_product_for_existing_orders(session: AsyncSession):
+    """Добавляет подарочный товар к заказу"""
+    orders = await get_orders_with_products_assoc(session)
+    gift_product = await create_product(
+        session,
+        name="Gift",
+        description="Gift for you",
+        price=0,
+    )
+    for order in orders:
+        order.products_details.append(OrderProductAssociation(
+            count=1,
+            unit_price=0,
+            product=gift_product,
+        ))
+
+    await session.commit()
 
 
 async def main_relations(session: AsyncSession):
@@ -312,6 +331,7 @@ async def demo_m2m(session: AsyncSession):
     # await create_orders_and_products(session)
     # await demo_get_orders_with_products_through_secondary(session)
     await demo_get_orders_with_products_with_assoc(session)
+    # await create_gift_product_for_existing_orders(session)
 
 
 async def main():
